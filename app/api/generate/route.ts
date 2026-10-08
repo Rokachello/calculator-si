@@ -69,10 +69,11 @@ export async function POST(request: Request) {
     if (!prompt || prompt.length > 1000) {
       return NextResponse.json({ error: "Prompt must contain 1-1000 characters." }, { status: 400 });
     }
-    if (!process.env.OPENAI_API_KEY) {
+    const apiKey = process.env.CALCULATOR_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+    if (!apiKey) {
       return NextResponse.json({ calculator: demoCalculatorForPrompt(prompt), mode: "demo" });
     }
-    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const client = new OpenAI({ apiKey });
     const response = await client.responses.create({
       model: process.env.OPENAI_MODEL || "gpt-5.5",
       instructions: INSTRUCTIONS,
@@ -86,6 +87,9 @@ export async function POST(request: Request) {
         },
       },
     });
+    if (response.status !== "completed" || !response.output_text) {
+      throw new Error("The model did not return a complete calculator. Please try again.");
+    }
     const raw = JSON.parse(response.output_text);
     const calculator = validateCalculatorSpec(raw, "ai");
     return NextResponse.json({ calculator, mode: "ai" });
