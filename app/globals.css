@@ -14,11 +14,14 @@
 html { background: var(--page-bg); }
 body {
   margin: 0; color: var(--text); background: var(--page-bg);
-  font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.45;
+  font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.55;
 }
 a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; }
 button, input, textarea { font: inherit; }
+button:disabled { opacity: .55; cursor: default; }
+button:focus-visible, a:focus-visible { outline: 2px solid #477ba7; outline-offset: 3px; }
+h1, h2, h3 { overflow-wrap: anywhere; }
 button { cursor: pointer; }
 
 .site-frame { min-height: 100vh; }
@@ -183,6 +186,49 @@ textarea:focus, input:focus {
 }
 .footer-note { text-align: right; }
 
+.workspace-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 22px 0 12px; }
+.workspace-heading h2 { margin: 0; color: #2b4f70; font-size: 17px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+.toolbar .classic-button { text-decoration: none; display: inline-block; }
+.small-copy, .optional { color: #65717a; font-size: 12px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid label, .edit-input-row label, .share-panel label { display: block; color: #34414b; font-weight: 700; font-size: 12px; }
+.form-grid input, .edit-input-row input, .share-panel input {
+  display: block; width: 100%; margin-top: 5px; padding: 8px; color: #222; background: white;
+  border: 1px solid #9ca8b2; border-radius: 2px;
+}
+.form-grid textarea, .share-panel textarea { margin-top: 5px; font-weight: normal; }
+.full-width { grid-column: 1 / -1; }
+fieldset { min-width: 0; margin: 18px 0; border: 1px solid #c3ccd4; padding: 12px; }
+legend { color: #34414b; font-size: 13px; font-weight: 700; padding: 0 6px; }
+.edit-inputs { display: grid; gap: 12px; }
+.edit-input-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; }
+.checkbox-label { display: flex; align-items: center; gap: 8px; margin: 15px 0; font-size: 13px; }
+.checkbox-label input { width: 16px; height: 16px; }
+.tips-section { margin-top: 14px; }
+.lead-form { margin-top: 20px; padding-top: 18px; border-top: 1px solid #c3ccd4; }
+.lead-form h3 { color: #2b4f70; margin: 0; font-size: 17px; }
+.lead-form p { margin: 7px 0 14px; color: #59646d; }
+.lead-preview { border-top: 1px solid #d6dce1; padding-top: 12px; margin-top: 16px; color: #59646d; font-size: 12px; }
+.template-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.template { padding: 18px; display: flex; flex-direction: column; align-items: flex-start; }
+.template + .template { border-left: 1px solid #d6dce1; }
+.template h3 { margin: 0; font-size: 16px; color: #2b4f70; }
+.template p { color: #59646d; font-size: 13px; flex: 1; }
+.template-note { font-size: 11px; color: #66717b; margin: 0 0 12px; }
+.share-panel input, .share-panel textarea { font-family: Consolas, monospace; font-size: 12px; }
+.share-panel textarea { min-height: 80px; }
+.request-item { border: 1px solid #c3ccd4; padding: 12px; margin: 0 0 12px; overflow-wrap: anywhere; }
+.request-item h3, .request-item p { margin: 0 0 7px; }
+.request-item small { color: #66717b; }
+.request-item dl { font-size: 12px; margin: 8px 0; }
+.request-item dl > div { display: flex; justify-content: space-between; gap: 10px; }
+.request-item dd { margin: 0; }
+.request-message { white-space: pre-wrap; }
+.embed-wrap { width: 980px; max-width: 100%; margin: 0 auto; padding: 12px; }
+.embed-credit { font-size: 11px; text-align: right; padding-bottom: 10px; }
+.calculation-error { color: #8a2f2f; font-size: 12px; margin-bottom: 10px; }
+
 @media (max-width: 760px) {
   .header-inner { min-height: 64px; }
   .site-logo { font-size: 25px; }
@@ -195,4 +241,11 @@ textarea:focus, input:focus {
   .panel-body { padding: 13px; }
   .result-box { min-height: 155px; }
   .footer-note { text-align: left; }
+  .workspace-heading { align-items: flex-start; flex-direction: column; gap: 0; }
+  .form-grid, .edit-input-row, .template-grid { grid-template-columns: 1fr; }
+  .template + .template { border-left: 0; border-top: 1px solid #d6dce1; }
+  .calculator-titlebar { align-items: flex-start; }
+  .panel-titlebar h1 { font-size: 19px; }
+  .input-table input { max-width: 100%; width: 100px; }
+  .unit { display: block; margin-left: 0; margin-top: 3px; }
 }

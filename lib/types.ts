@@ -20,6 +20,8 @@ export type CalculatorSpec = {
     decimals: number;
   };
   assumptions: string[];
+  tips: string[];
+  leadCapture: { enabled: boolean; collectionId: string | null };
   confidenceNote: string;
   source: "ai" | "demo" | "verified";
 };

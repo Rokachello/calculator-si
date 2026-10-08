@@ -8,17 +8,21 @@ Never execute code produced by an LLM. Do not introduce eval(), new Function(), 
 
 The LLM may propose a math expression only. All formulas must pass through the local whitelist parser in `lib/math-engine.ts`.
 
-## Current scope: v0.1
+## Current scope: v0.2 (issue #3)
 Keep scope intentionally narrow:
 - numeric inputs only,
 - one numeric result,
 - max 8 inputs,
-- share through URL encoding,
+- English product chrome; generated content follows the request language,
+- editable titles, descriptions, labels, defaults, units, assumptions and tips,
+- share through URL encoding, a clean public view and iframe embeds,
+- painting, cleaning and landscaping business demo templates,
+- optional lead capture behind a temporary in-memory repository boundary,
 - no accounts,
 - no database,
 - no payments,
 - no admin,
-- no B2B features.
+- no analytics, live external data, custom domains or agency features.
 
 ## Quality bar
 Before marking a task complete:

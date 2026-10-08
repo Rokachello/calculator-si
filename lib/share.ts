@@ -17,12 +17,15 @@ function fromBase64Url(value: string): string {
 }
 
 export function encodeCalculator(spec: CalculatorSpec): string {
-  return toBase64Url(JSON.stringify(spec));
+  const encoded = toBase64Url(JSON.stringify(validateCalculatorSpec(spec, spec.source)));
+  if (encoded.length > 12000) throw new Error("Shared calculator is too large");
+  return encoded;
 }
 
 export function decodeCalculator(encoded: string): CalculatorSpec {
   if (encoded.length > 12000) throw new Error("Shared calculator is too large");
   const raw = JSON.parse(fromBase64Url(encoded));
-  const source = raw?.source === "verified" ? "verified" : raw?.source === "demo" ? "demo" : "ai";
+  // A public URL is not proof of verification. Never trust a supplied verified badge.
+  const source = raw?.source === "demo" ? "demo" : "ai";
   return validateCalculatorSpec(raw, source);
 }
