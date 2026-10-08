@@ -25,6 +25,10 @@ export function validateCalculatorSpec(raw: unknown, source: CalculatorSpec["sou
     const defaultValue = cleanNumber(item.default, 0);
     const min = item.min === null ? null : cleanNumber(item.min, defaultValue);
     const max = item.max === null ? null : cleanNumber(item.max, defaultValue);
+    if ((min !== null && max !== null && min > max) ||
+        (min !== null && defaultValue < min) || (max !== null && defaultValue > max)) {
+      throw new Error(`Default value for ${id} must be within its input limits`);
+    }
     return {
       id, label: cleanText(item.label, id, 80), unit: cleanText(item.unit, "", 24),
       default: defaultValue, min, max,
@@ -42,6 +46,15 @@ export function validateCalculatorSpec(raw: unknown, source: CalculatorSpec["sou
     ? raw.assumptions.filter((x): x is string => typeof x === "string").slice(0, 5).map((x) => x.slice(0, 180))
     : [];
 
+  // Old shared URLs have no tips or lead settings; keep them readable.
+  const tips = Array.isArray(raw.tips)
+    ? raw.tips.filter((x): x is string => typeof x === "string")
+      .map((x) => x.trim().slice(0, 180)).filter(Boolean).slice(0, 4)
+    : [];
+  const lead = isPlainObject(raw.leadCapture) ? raw.leadCapture : {};
+  const collectionId = typeof lead.collectionId === "string" && /^[a-f0-9-]{36}$/.test(lead.collectionId)
+    ? lead.collectionId : null;
+
   return {
     version: 1,
     title: cleanText(raw.title, "AI calculator", 100),
@@ -53,6 +66,8 @@ export function validateCalculatorSpec(raw: unknown, source: CalculatorSpec["sou
       decimals: Math.max(0, Math.min(6, Math.round(cleanNumber(raw.output.decimals, 2)))),
     },
     assumptions,
+    tips,
+    leadCapture: { enabled: lead.enabled === true, collectionId },
     confidenceNote: cleanText(raw.confidenceNote, "Check assumptions before relying on this result.", 220),
     source,
   };

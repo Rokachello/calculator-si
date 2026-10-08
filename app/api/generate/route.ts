@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 const CALCULATOR_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["title", "description", "inputs", "formula", "output", "assumptions", "confidenceNote"],
+  required: ["title", "description", "inputs", "formula", "output", "assumptions", "tips", "confidenceNote"],
   properties: {
     title: { type: "string" },
     description: { type: "string" },
@@ -43,6 +43,7 @@ const CALCULATOR_SCHEMA = {
       }
     },
     assumptions: { type: "array", maxItems: 5, items: { type: "string" } },
+    tips: { type: "array", minItems: 0, maxItems: 4, items: { type: "string" } },
     confidenceNote: { type: "string" }
   }
 } as const;
@@ -53,13 +54,16 @@ The formula is NOT JavaScript. It is a safe math expression parsed by our engine
 Allowed operators: + - * / ^ and parentheses.
 Allowed functions: abs(x), sqrt(x), round(x), floor(x), ceil(x), min(a,b), max(a,b), pow(a,b).
 Formula variables must exactly match input ids.
-Use only numeric inputs in v0.1.
+Use only numeric calculator inputs, with one numeric result.
+Use the language of the user's request for the calculator title, description, labels, assumptions, tips and confidence note.
+Support compact business quote, estimate and ROI calculators without inventing prices or guaranteed returns.
 Use short ASCII input ids such as distance, price, area, rate.
 Prefer SI units and EUR when the request implies Slovenia.
 Do not invent laws, tax brackets, medical recommendations, official rates, or changing external facts.
 If a request depends on regulated, medical, legal, tax, benefits, or current official data, build only the generic mathematical structure if possible and explicitly say which official value the user must supply as an input.
 Keep the calculator compact: normally 2-6 inputs.
 Make assumptions explicit.
+Include 0-4 short, specific practical tips. Do not present medical, legal or financial advice as authoritative.
 Never emit code, HTML, scripts, URLs, or executable content.`;
 
 export async function POST(request: Request) {

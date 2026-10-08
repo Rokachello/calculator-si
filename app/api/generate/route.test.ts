@@ -14,6 +14,7 @@ const novelCalculator = {
   ],
   formula: "volume / flow", output: { label: "Čas", unit: "min", decimals: 1 },
   assumptions: ["Pretok je konstanten."], confidenceNote: "Preverite dejanski pretok.",
+  tips: ["Izmerite pretok cevi pred polnjenjem."],
 };
 
 function mockOpenAI(outputText: string, status = "completed") {
@@ -65,6 +66,10 @@ describe("calculator generation route", () => {
     expect(body.text.format).toMatchObject({ type: "json_schema", name: "calculator_spec", strict: true,
       schema: { additionalProperties: false, properties: { inputs: { maxItems: 8 } } } });
     expect(body).not.toHaveProperty("response_format");
+    expect(body.text.format.schema.required).toContain("tips");
+    expect(body.text.format.schema.properties.tips).toMatchObject({ minItems: 0, maxItems: 4 });
+    expect(body.instructions).toContain("language of the user's request");
+    expect(payload.calculator.tips).toEqual(novelCalculator.tips);
   });
 
   it("rejects executable model output through the safe math parser", async () => {
