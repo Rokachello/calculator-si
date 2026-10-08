@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
+import Link from "next/link";
 import { CalculatorSpec } from "@/lib/types";
 import { evaluateFormula } from "@/lib/math-engine";
 import { decodeCalculator, encodeCalculator } from "@/lib/share";
@@ -11,26 +12,37 @@ const EXAMPLES = [
   "Koliko ploscic potrebujem za prostor 4 x 3 m z 10 % rezerve?",
 ];
 
-export default function Home() {
-  const [prompt, setPrompt] = useState(EXAMPLES[0]);
-  const [calculator, setCalculator] = useState<CalculatorSpec | null>(null);
-  const [values, setValues] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [shareState, setShareState] = useState("");
+function subscribeToLocation(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  return () => window.removeEventListener("popstate", onChange);
+}
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const encoded = params.get("c");
-    if (!encoded) return;
+export default function Home() {
+  const search = useSyncExternalStore(subscribeToLocation, () => window.location.search, () => "");
+  const shared = useMemo(() => {
+    const encoded = new URLSearchParams(search).get("c");
+    if (!encoded) return { calculator: null, error: "" };
     try {
-      const decoded = decodeCalculator(encoded);
-      setCalculator(decoded);
-      setValues(Object.fromEntries(decoded.inputs.map((input) => [input.id, input.default])));
+      return { calculator: decodeCalculator(encoded), error: "" };
     } catch {
-      setError("Deljeni kalkulator ni veljaven ali je poskodovan.");
+      return { calculator: null, error: "Deljeni kalkulator ni veljaven ali je poskodovan." };
     }
-  }, []);
+  }, [search]);
+  return <CalculatorPage key={search} initialCalculator={shared.calculator} initialError={shared.error} />;
+}
+
+function CalculatorPage({ initialCalculator, initialError }: {
+  initialCalculator: CalculatorSpec | null;
+  initialError: string;
+}) {
+  const [prompt, setPrompt] = useState(EXAMPLES[0]);
+  const [calculator, setCalculator] = useState<CalculatorSpec | null>(initialCalculator);
+  const [values, setValues] = useState<Record<string, number>>(() =>
+    Object.fromEntries(initialCalculator?.inputs.map((input) => [input.id, input.default]) ?? [])
+  );
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(initialError);
+  const [shareState, setShareState] = useState("");
 
   const result = useMemo(() => {
     if (!calculator) return null;
@@ -73,7 +85,7 @@ export default function Home() {
     <div className="site-frame">
       <header className="site-header">
         <div className="header-inner">
-          <a className="site-logo" href="/">Calculators<span>.si</span></a>
+          <Link className="site-logo" href="/">Calculators<span>.si</span></Link>
           <div className="site-tagline">spletni kalkulatorji za vsakdan</div>
         </div>
         <nav className="main-nav" aria-label="Glavna navigacija">
